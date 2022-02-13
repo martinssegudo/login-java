@@ -2,6 +2,7 @@ package br.com.login.services.impl;
 
 import br.com.login.entities.User;
 import br.com.login.exceptions.CreateUserException;
+import br.com.login.exceptions.FindUserException;
 import br.com.login.repository.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -126,5 +128,29 @@ public class UserServiceImplTest {
                 .build();
 
         User createdUser = usuarioService.saveUser(user);
+    }
+
+    @Test
+    public void findUserByLoginSucess() throws FindUserException {
+        when(userRepository.findByLogin(anyString()))
+                .thenReturn(User.builder()
+                                .name("Luiz Segundo")
+                                .login("luiz_segundo")
+                                .passsword("12345678")
+                                .birthDay(LocalDate.now())
+                                .startDate(LocalDate.now())
+                                .build());
+
+        User findedUser = usuarioService.findUserByLogin("LoginUser");
+
+        assertNotNull(findedUser);
+    }
+
+    @Test(expected = FindUserException.class)
+    public void findUserByLoginError() throws FindUserException {
+        when(userRepository.findByLogin(anyString()))
+                .thenReturn(null);
+
+        User findedUser = usuarioService.findUserByLogin("LoginUser");
     }
 }

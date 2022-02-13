@@ -2,6 +2,7 @@ package br.com.login.services.impl;
 
 import br.com.login.entities.Role;
 import br.com.login.exceptions.CreateRoleException;
+import br.com.login.exceptions.FindRoleException;
 import br.com.login.repository.RoleRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -98,5 +100,41 @@ public class RoleServiceImplTest {
 
 
         Role resposneRole = roleService.saveRole(newRole);
+    }
+
+
+    @Test(expected = CreateRoleException.class)
+    public void createRoleWithErroStartDateNull() throws CreateRoleException{
+        Role newRole = Role.builder()
+                .name("Admim")
+                .technicalName("Admim")
+                .startDate(null)
+                .build();
+
+        Role resposneRole = roleService.saveRole(newRole);
+    }
+
+    @Test
+    public void findRoleByTechnicalNameSucess() throws FindRoleException {
+        Role role = Role.builder()
+                .id(1L)
+                .name("Admim")
+                .technicalName("Admim")
+                .startDate(LocalDateTime.now())
+                .build();
+        when(roleRepository.findByTechnicalName(anyString()))
+                .thenReturn(role);
+
+        Role resposneRole = roleService.findBytechnicalName("ADMIN");
+
+        assertNotNull(resposneRole.getId());
+    }
+
+    @Test(expected = FindRoleException.class)
+    public void findRoleByTechnicalNameErro() throws FindRoleException {
+        when(roleRepository.findByTechnicalName(anyString()))
+                .thenReturn(null);
+
+        Role resposneRole = roleService.findBytechnicalName("XPTO");
     }
 }

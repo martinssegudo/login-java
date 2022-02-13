@@ -3,6 +3,7 @@ package br.com.login.services.impl;
 import br.com.login.entities.User;
 import br.com.login.exceptions.CreateUserException;
 import br.com.login.exceptions.DateUtilException;
+import br.com.login.exceptions.FindUserException;
 import br.com.login.exceptions.StringUtilException;
 import br.com.login.repository.UserRepository;
 import br.com.login.services.UserService;
@@ -34,4 +35,14 @@ public class UserServiceImpl implements UserService {
         }
         return userRepository.save(newUser);
     }
+
+    @Override
+    public User findUserByLogin(String login) throws FindUserException {
+        User user = userRepository.findByLogin(login);
+        if(user == null)
+            throw new FindUserException();
+        return user;
+    }
+
+
 }
