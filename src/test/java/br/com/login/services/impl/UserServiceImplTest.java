@@ -1,25 +1,33 @@
 package br.com.login.services.impl;
 
+import br.com.login.entities.ActiveUserInfo;
 import br.com.login.entities.User;
+import br.com.login.exceptions.CreateActiveInfoException;
 import br.com.login.exceptions.CreateUserException;
 import br.com.login.exceptions.FindUserException;
 import br.com.login.repository.UserRepository;
+import br.com.login.services.UserActiveInfoService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UserServiceImplTest {
     @Mock
     UserRepository userRepository;
+    @Mock
+    UserActiveInfoService userActiveRepository;
+    @Mock
+    UserActiveInfoService userActiveInfoService;
     @InjectMocks
     UserServiceImpl usuarioService;
 
@@ -35,7 +43,7 @@ public class UserServiceImplTest {
                 .login("luiz_segundo")
                 .passsword("12345678")
                 .birthDay(LocalDate.now())
-                .startDate(LocalDate.now())
+                .createDate(LocalDateTime.now())
                 .build();
         User userReturned = User.builder()
                 .id(1L)
@@ -43,8 +51,16 @@ public class UserServiceImplTest {
                 .login("luiz_segundo")
                 .passsword("12345678")
                 .birthDay(LocalDate.now())
-                .startDate(LocalDate.now())
+                .createDate(LocalDateTime.now())
                 .build();
+
+        ActiveUserInfo newActive = ActiveUserInfo.builder()
+                .user(userReturned)
+                .startDate(LocalDateTime.now())
+                .build();
+
+
+        doNothing().when(userActiveRepository).saveNewActiveInfo(anyString());
 
         when(userRepository.save(any(User.class)))
                 .thenReturn(userReturned);
@@ -124,8 +140,33 @@ public class UserServiceImplTest {
                 .login("luiz_segundo")
                 .passsword("12345678")
                 .birthDay(LocalDate.now())
-                .startDate(null)
+                .createDate(null)
                 .build();
+
+        User createdUser = usuarioService.saveUser(user);
+    }
+
+    @Test(expected = CreateUserException.class)
+    public void createNewUserWithErroSaveNewActiveInfo() throws CreateUserException, CreateActiveInfoException {
+        User user = User.builder()
+                .name("Luiz Segundo")
+                .login("luiz_segundo")
+                .passsword("12345678")
+                .birthDay(LocalDate.now())
+                .createDate(LocalDateTime.now())
+                .build();
+
+        User userReturned = User.builder()
+                .id(1L)
+                .name("Luiz Segundo")
+                .login("luiz_segundo")
+                .passsword("12345678")
+                .birthDay(LocalDate.now())
+                .createDate(LocalDateTime.now())
+                .build();
+        when(userRepository.save(any(User.class))).thenReturn(userReturned);
+        doThrow(CreateActiveInfoException.class).when(userActiveInfoService)
+                .saveNewActiveInfo("luiz_segundo");
 
         User createdUser = usuarioService.saveUser(user);
     }
@@ -138,7 +179,7 @@ public class UserServiceImplTest {
                                 .login("luiz_segundo")
                                 .passsword("12345678")
                                 .birthDay(LocalDate.now())
-                                .startDate(LocalDate.now())
+                                .createDate(LocalDateTime.now())
                                 .build());
 
         User findedUser = usuarioService.findUserByLogin("LoginUser");
@@ -149,8 +190,10 @@ public class UserServiceImplTest {
     @Test(expected = FindUserException.class)
     public void findUserByLoginError() throws FindUserException {
         when(userRepository.findByLogin(anyString()))
-                .thenReturn(null);
+                .thenThrow(EmptyResultDataAccessException.class);
 
         User findedUser = usuarioService.findUserByLogin("LoginUser");
     }
+
+
 }

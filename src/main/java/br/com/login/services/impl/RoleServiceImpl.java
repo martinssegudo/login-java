@@ -1,15 +1,13 @@
 package br.com.login.services.impl;
 
 import br.com.login.entities.Role;
-import br.com.login.exceptions.CreateRoleException;
-import br.com.login.exceptions.DateUtilException;
-import br.com.login.exceptions.FindRoleException;
-import br.com.login.exceptions.StringUtilException;
+import br.com.login.exceptions.*;
 import br.com.login.repository.RoleRepository;
 import br.com.login.services.RoleService;
 import br.com.login.services.util.DateUtil;
 import br.com.login.services.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,9 +33,12 @@ public class RoleServiceImpl implements RoleService {
     }
 
     public Role findBytechnicalName(String technicalName) throws FindRoleException {
-        Role role = roleRepository.findByTechnicalName(technicalName);
-        if(role == null)
+        Role role = null;
+        try{
+            role = roleRepository.findByTechnicalName(technicalName);
+        }catch (EmptyResultDataAccessException ex){
             throw new FindRoleException();
+        }
         return role;
     }
 }

@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.time.LocalDateTime;
 
@@ -133,7 +134,7 @@ public class RoleServiceImplTest {
     @Test(expected = FindRoleException.class)
     public void findRoleByTechnicalNameErro() throws FindRoleException {
         when(roleRepository.findByTechnicalName(anyString()))
-                .thenReturn(null);
+                .thenThrow(EmptyResultDataAccessException.class);
 
         Role resposneRole = roleService.findBytechnicalName("XPTO");
     }
