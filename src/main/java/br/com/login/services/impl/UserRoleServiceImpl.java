@@ -67,5 +67,17 @@ public class UserRoleServiceImpl implements UserRoleService {
         }
     }
 
+    @Override
+    public List<UserRole> findRolesByLogin(String login) throws RoleAssociateExption {
+        List<UserRole> roles = null;
+        try {
+            roles = userRoleRepository.findByLogin(login);
+        }catch (EmptyResultDataAccessException ex){
+            throw new RoleAssociateExption();
+        }
+
+        return roles;
+    }
+
 
 }

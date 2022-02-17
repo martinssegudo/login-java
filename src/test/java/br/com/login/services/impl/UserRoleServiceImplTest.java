@@ -19,7 +19,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -195,5 +197,54 @@ public class UserRoleServiceImplTest {
                 .thenReturn(Arrays.asList(userRoleFinded1,userRoleFinded2));
 
         userRoleService.removeRoleToUser("login_luiz", "XPTO");
+    }
+
+    @Test
+    public void findRolesByLoginSucess() throws RoleAssociateExption {
+        Role role1 = Role.builder()
+                .id(1L)
+                .name("Admin")
+                .technicalName("ADMIN")
+                .startDate(LocalDateTime.now())
+                .build();
+        Role role2 = Role.builder()
+                .id(2L)
+                .name("Admin")
+                .technicalName("USER")
+                .startDate(LocalDateTime.now())
+                .build();
+        User user = User.builder()
+                .id(1L)
+                .name("Luiz Segundo")
+                .login("luiz_segundo")
+                .passsword("12345678")
+                .birthDay(LocalDate.now())
+                .createDate(LocalDateTime.now())
+                .build();
+        UserRole userRoleFinded1 = UserRole.builder()
+                .id(1L)
+                .startData(LocalDateTime.now())
+                .role(role1)
+                .user(user)
+                .build();
+
+        UserRole userRoleFinded2 = UserRole.builder()
+                .id(2L)
+                .startData(LocalDateTime.now())
+                .role(role2)
+                .user(user)
+                .build();
+        when(userRoleRepository.findByLogin(anyString()))
+                .thenReturn(Arrays.asList(userRoleFinded1,userRoleFinded2));
+        List<UserRole> roles =  userRoleService.findRolesByLogin("login");
+        assertFalse(roles.isEmpty());
+    }
+
+
+    @Test(expected = RoleAssociateExption.class)
+    public void findRolesByLoginErroNotFound() throws RoleAssociateExption {
+        when(userRoleRepository.findByLogin(anyString()))
+                .thenThrow(EmptyResultDataAccessException.class);
+        List<UserRole> roles =  userRoleService.findRolesByLogin("login");
     }
 }

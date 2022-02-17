@@ -1,12 +1,17 @@
 package br.com.login.services.impl;
 
+import br.com.login.dtos.LoginInfoDTO;
 import br.com.login.entities.ActiveUserInfo;
+import br.com.login.entities.Role;
 import br.com.login.entities.User;
+import br.com.login.entities.UserRole;
 import br.com.login.exceptions.CreateActiveInfoException;
 import br.com.login.exceptions.CreateUserException;
 import br.com.login.exceptions.FindUserException;
+import br.com.login.exceptions.RoleAssociateExption;
 import br.com.login.repository.UserRepository;
 import br.com.login.services.UserActiveInfoService;
+import br.com.login.services.UserRoleService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -16,6 +21,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,8 +34,10 @@ public class UserServiceImplTest {
     UserActiveInfoService userActiveRepository;
     @Mock
     UserActiveInfoService userActiveInfoService;
+    @Mock
+    UserRoleService userRoleService;
     @InjectMocks
-    UserServiceImpl usuarioService;
+    UserServiceImpl userService;
 
     @Before
     public void config(){
@@ -65,7 +73,7 @@ public class UserServiceImplTest {
         when(userRepository.save(any(User.class)))
                 .thenReturn(userReturned);
 
-        User createdUser = usuarioService.saveUser(user);
+        User createdUser = userService.saveUser(user);
         assertNotNull(createdUser.getId());
     }
 
@@ -75,7 +83,7 @@ public class UserServiceImplTest {
                 .name("Luiz")
                 .build();
 
-        User createdUser = usuarioService.saveUser(user);
+        User createdUser = userService.saveUser(user);
     }
 
     @Test(expected = CreateUserException.class)
@@ -84,7 +92,7 @@ public class UserServiceImplTest {
                 .name(null)
                 .build();
 
-        User createdUser = usuarioService.saveUser(user);
+        User createdUser = userService.saveUser(user);
     }
 
 
@@ -95,7 +103,7 @@ public class UserServiceImplTest {
                 .login(null)
                 .build();
 
-        User createdUser = usuarioService.saveUser(user);
+        User createdUser = userService.saveUser(user);
     }
 
     @Test(expected = CreateUserException.class)
@@ -106,7 +114,7 @@ public class UserServiceImplTest {
                 .passsword(null)
                 .build();
 
-        User createdUser = usuarioService.saveUser(user);
+        User createdUser = userService.saveUser(user);
     }
 
     @Test(expected = CreateUserException.class)
@@ -117,7 +125,7 @@ public class UserServiceImplTest {
                 .passsword("123456")
                 .build();
 
-        User createdUser = usuarioService.saveUser(user);
+        User createdUser = userService.saveUser(user);
     }
 
 
@@ -130,7 +138,7 @@ public class UserServiceImplTest {
                 .birthDay(null)
                 .build();
 
-        User createdUser = usuarioService.saveUser(user);
+        User createdUser = userService.saveUser(user);
     }
 
     @Test(expected = CreateUserException.class)
@@ -143,7 +151,7 @@ public class UserServiceImplTest {
                 .createDate(null)
                 .build();
 
-        User createdUser = usuarioService.saveUser(user);
+        User createdUser = userService.saveUser(user);
     }
 
     @Test(expected = CreateUserException.class)
@@ -168,7 +176,7 @@ public class UserServiceImplTest {
         doThrow(CreateActiveInfoException.class).when(userActiveInfoService)
                 .saveNewActiveInfo("luiz_segundo");
 
-        User createdUser = usuarioService.saveUser(user);
+        User createdUser = userService.saveUser(user);
     }
 
     @Test
@@ -182,7 +190,7 @@ public class UserServiceImplTest {
                                 .createDate(LocalDateTime.now())
                                 .build());
 
-        User findedUser = usuarioService.findUserByLogin("LoginUser");
+        User findedUser = userService.findUserByLogin("LoginUser");
 
         assertNotNull(findedUser);
     }
@@ -192,8 +200,50 @@ public class UserServiceImplTest {
         when(userRepository.findByLogin(anyString()))
                 .thenThrow(EmptyResultDataAccessException.class);
 
-        User findedUser = usuarioService.findUserByLogin("LoginUser");
+        User findedUser = userService.findUserByLogin("LoginUser");
     }
 
 
+    @Test
+    public void userLoginSucess() throws RoleAssociateExption {
+        Role role1 = Role.builder()
+                .id(1L)
+                .name("Admin")
+                .technicalName("ADMIN")
+                .startDate(LocalDateTime.now())
+                .build();
+        Role role2 = Role.builder()
+                .id(2L)
+                .name("Admin")
+                .technicalName("USER")
+                .startDate(LocalDateTime.now())
+                .build();
+        User user = User.builder()
+                .id(1L)
+                .name("Luiz Segundo")
+                .login("luiz_segundo")
+                .passsword("12345678")
+                .birthDay(LocalDate.now())
+                .createDate(LocalDateTime.now())
+                .build();
+        UserRole userRoleFinded1 = UserRole.builder()
+                .id(1L)
+                .startData(LocalDateTime.now())
+                .role(role1)
+                .user(user)
+                .build();
+
+        UserRole userRoleFinded2 = UserRole.builder()
+                .id(2L)
+                .startData(LocalDateTime.now())
+                .role(role2)
+                .user(user)
+                .build();
+        when(userRepository.findByLoginAndPassword(anyString(),anyString()))
+                .thenReturn(user);
+        when(userRoleService.findRolesByLogin(anyString()))
+                .thenReturn(Arrays.asList(userRoleFinded1,userRoleFinded2));
+        LoginInfoDTO loginInfo = userService.loginUser("login","senha");
+        assertNotNull(loginInfo.getRoles());
+    }
 }
