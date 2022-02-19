@@ -8,7 +8,7 @@ import br.com.login.repository.UserRepository;
 import br.com.login.services.UserActiveInfoService;
 import br.com.login.services.UserRoleService;
 import br.com.login.services.UserService;
-import br.com.login.services.util.DateUtil;
+import br.com.login.util.DateUtil;
 import br.com.login.services.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
         try {
             StringUtil.checkStringLength(newUser.getName(), 10L);
             StringUtil.checkStringIsValid(newUser.getLogin());
-            StringUtil.checkStringLength(newUser.getPasssword(), 8L);
+            StringUtil.checkStringLength(newUser.getPassword(), 8L);
             DateUtil.checkLocalDateNotNull(newUser.getBirthDay());
             DateUtil.checkLocalDateTimeNotNull(newUser.getCreateDate());
             user = userRepository.save(newUser);
@@ -64,8 +64,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginInfoDTO loginUser(String login, String password) throws RoleAssociateExption {
-        User user = userRepository.findByLoginAndPassword(login,password);
-        List<UserRole> userRoleList = userRoleService.findRolesByLogin(login);
+        User user = null;
+        List<UserRole> userRoleList = null;
+        try{
+            user = userRepository.findByLoginAndPassword(login,password);
+            userRoleList = userRoleService.findRolesByLogin(login);
+        }catch (EmptyResultDataAccessException ex){
+            throw new RoleAssociateExption();
+        }
+
         return LoginInfoDTO.builder()
                 .user(user)
                 .roles(userRoleList.stream()

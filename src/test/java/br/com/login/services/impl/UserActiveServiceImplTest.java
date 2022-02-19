@@ -5,7 +5,6 @@ import br.com.login.entities.User;
 import br.com.login.exceptions.CreateActiveInfoException;
 import br.com.login.exceptions.FindUserException;
 import br.com.login.repository.UserActiveInfoRepository;
-import br.com.login.services.UserActiveInfoService;
 import br.com.login.services.UserService;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +40,7 @@ public class UserActiveServiceImplTest {
                 .id(1L)
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(LocalDateTime.now())
                 .build();
@@ -72,7 +71,7 @@ public class UserActiveServiceImplTest {
                 .id(1L)
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(LocalDateTime.now())
                 .build();

@@ -54,7 +54,7 @@ public class UserRoleServiceImplTest {
                 .id(1L)
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(LocalDateTime.now())
                 .build();
@@ -89,7 +89,7 @@ public class UserRoleServiceImplTest {
                 .id(1L)
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(LocalDateTime.now())
                 .build();
@@ -119,7 +119,7 @@ public class UserRoleServiceImplTest {
                 .id(1L)
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(LocalDateTime.now())
                 .build();
@@ -175,7 +175,7 @@ public class UserRoleServiceImplTest {
                 .id(1L)
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(LocalDateTime.now())
                 .build();
@@ -217,7 +217,7 @@ public class UserRoleServiceImplTest {
                 .id(1L)
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(LocalDateTime.now())
                 .build();

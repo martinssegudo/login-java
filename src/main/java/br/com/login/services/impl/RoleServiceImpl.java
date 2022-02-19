@@ -4,7 +4,7 @@ import br.com.login.entities.Role;
 import br.com.login.exceptions.*;
 import br.com.login.repository.RoleRepository;
 import br.com.login.services.RoleService;
-import br.com.login.services.util.DateUtil;
+import br.com.login.util.DateUtil;
 import br.com.login.services.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;

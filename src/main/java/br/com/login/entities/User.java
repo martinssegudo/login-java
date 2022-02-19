@@ -37,7 +37,7 @@ public class User {
     @Column(name = "DS_LOGIN", unique = true)
     private String login;
     @Column(name = "DS_SENHA")
-    private String passsword;
+    private String password;
     @Column(name = "DT_NASCIMENTO")
     private LocalDate birthDay;
     @Column(name = "DT_CRIACAO")

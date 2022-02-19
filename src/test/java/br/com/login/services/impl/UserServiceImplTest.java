@@ -49,7 +49,7 @@ public class UserServiceImplTest {
         User user = User.builder()
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(LocalDateTime.now())
                 .build();
@@ -57,7 +57,7 @@ public class UserServiceImplTest {
                 .id(1L)
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(LocalDateTime.now())
                 .build();
@@ -111,7 +111,7 @@ public class UserServiceImplTest {
         User user = User.builder()
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword(null)
+                .password(null)
                 .build();
 
         User createdUser = userService.saveUser(user);
@@ -122,7 +122,7 @@ public class UserServiceImplTest {
         User user = User.builder()
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("123456")
+                .password("123456")
                 .build();
 
         User createdUser = userService.saveUser(user);
@@ -134,7 +134,7 @@ public class UserServiceImplTest {
         User user = User.builder()
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(null)
                 .build();
 
@@ -146,7 +146,7 @@ public class UserServiceImplTest {
         User user = User.builder()
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(null)
                 .build();
@@ -159,7 +159,7 @@ public class UserServiceImplTest {
         User user = User.builder()
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(LocalDateTime.now())
                 .build();
@@ -168,7 +168,7 @@ public class UserServiceImplTest {
                 .id(1L)
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(LocalDateTime.now())
                 .build();
@@ -185,7 +185,7 @@ public class UserServiceImplTest {
                 .thenReturn(User.builder()
                                 .name("Luiz Segundo")
                                 .login("luiz_segundo")
-                                .passsword("12345678")
+                                .password("12345678")
                                 .birthDay(LocalDate.now())
                                 .createDate(LocalDateTime.now())
                                 .build());
@@ -222,7 +222,7 @@ public class UserServiceImplTest {
                 .id(1L)
                 .name("Luiz Segundo")
                 .login("luiz_segundo")
-                .passsword("12345678")
+                .password("12345678")
                 .birthDay(LocalDate.now())
                 .createDate(LocalDateTime.now())
                 .build();
@@ -243,6 +243,32 @@ public class UserServiceImplTest {
                 .thenReturn(user);
         when(userRoleService.findRolesByLogin(anyString()))
                 .thenReturn(Arrays.asList(userRoleFinded1,userRoleFinded2));
+        LoginInfoDTO loginInfo = userService.loginUser("login","senha");
+        assertNotNull(loginInfo.getRoles());
+    }
+
+    @Test(expected = RoleAssociateExption.class)
+    public void userLoginErrorUserNotFound() throws RoleAssociateExption {
+        when(userRepository.findByLoginAndPassword(anyString(),anyString()))
+                .thenThrow(EmptyResultDataAccessException.class);
+        LoginInfoDTO loginInfo = userService.loginUser("login","senha");
+        assertNotNull(loginInfo.getRoles());
+    }
+
+    @Test(expected = RoleAssociateExption.class)
+    public void userLoginErrorUserRolesNotFound() throws RoleAssociateExption {
+        User user = User.builder()
+                .id(1L)
+                .name("Luiz Segundo")
+                .login("luiz_segundo")
+                .password("12345678")
+                .birthDay(LocalDate.now())
+                .createDate(LocalDateTime.now())
+                .build();
+        when(userRepository.findByLoginAndPassword(anyString(),anyString()))
+                .thenReturn(user);
+        when(userRoleService.findRolesByLogin(anyString()))
+                .thenThrow(EmptyResultDataAccessException.class);
         LoginInfoDTO loginInfo = userService.loginUser("login","senha");
         assertNotNull(loginInfo.getRoles());
     }
