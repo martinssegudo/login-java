@@ -5,6 +5,7 @@ import br.com.login.entities.User;
 import br.com.login.entities.UserRole;
 import br.com.login.exceptions.*;
 import br.com.login.repository.UserRepository;
+import br.com.login.repository.UserRoleRepository;
 import br.com.login.services.UserActiveInfoService;
 import br.com.login.services.UserRoleService;
 import br.com.login.services.UserService;
@@ -22,15 +23,15 @@ public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
     private UserActiveInfoService userActiveInfoService;
-    private UserRoleService userRoleService;
+    private UserRoleRepository userRoleRepository;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            UserActiveInfoService userActiveInfoService,
-                           UserRoleService userRoleService){
+                           UserRoleRepository userRoleRepository){
         this.userRepository = userRepository;
         this.userActiveInfoService = userActiveInfoService;
-        this.userRoleService = userRoleService;
+        this.userRoleRepository = userRoleRepository;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
             DateUtil.checkLocalDateNotNull(newUser.getBirthDay());
             DateUtil.checkLocalDateTimeNotNull(newUser.getCreateDate());
             user = userRepository.save(newUser);
-            userActiveInfoService.saveNewActiveInfo(newUser.getLogin());
+            userActiveInfoService.saveNewActiveInfo(newUser);
         }catch (StringUtilException | DateUtilException | CreateActiveInfoException ex){
             throw new CreateUserException();
         }
@@ -68,7 +69,7 @@ public class UserServiceImpl implements UserService {
         List<UserRole> userRoleList = null;
         try{
             user = userRepository.findByLoginAndPassword(login,password);
-            userRoleList = userRoleService.findRolesByLogin(login);
+            userRoleList = userRoleRepository.findByLogin(login);
         }catch (EmptyResultDataAccessException ex){
             throw new RoleAssociateExption();
         }

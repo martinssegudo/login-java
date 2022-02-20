@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserActiveInfoRepository extends JpaRepository<ActiveUserInfo, Long> {
 
-    @Query("Select aui " +
-            " from ActiveUserInfo aui " +
-            " where aui.user.login like :login " +
-            "       aui.endDate is null ")
+    @Query("SELECT aui " +
+            " FROM ActiveUserInfo aui " +
+            "  WHERE aui.user.login LIKE :login " +
+            "       AND aui.endDate is null ")
     public ActiveUserInfo findByLogin(@Param("login") String login);
 }

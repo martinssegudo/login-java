@@ -68,7 +68,7 @@ public class UserServiceImplTest {
                 .build();
 
 
-        doNothing().when(userActiveRepository).saveNewActiveInfo(anyString());
+        doNothing().when(userActiveRepository).saveNewActiveInfo(any(User.class));
 
         when(userRepository.save(any(User.class)))
                 .thenReturn(userReturned);
@@ -174,7 +174,7 @@ public class UserServiceImplTest {
                 .build();
         when(userRepository.save(any(User.class))).thenReturn(userReturned);
         doThrow(CreateActiveInfoException.class).when(userActiveInfoService)
-                .saveNewActiveInfo("luiz_segundo");
+                .saveNewActiveInfo(userReturned);
 
         User createdUser = userService.saveUser(user);
     }

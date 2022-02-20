@@ -48,22 +48,12 @@ public class UserActiveServiceImplTest {
                 .user(userReturned)
                 .startDate(LocalDateTime.now())
                 .build();
-        when(userService.findUserByLogin(anyString()))
-                .thenReturn(userReturned);
-
         when(userActiveInfoRepository.save(any(ActiveUserInfo.class)))
                 .thenReturn(newActive);
 
-        userActiveRepository.saveNewActiveInfo("luiz_segundo");
+        userActiveRepository.saveNewActiveInfo(userReturned);
     }
 
-    @Test(expected = CreateActiveInfoException.class)
-    public void createUserActiveInfoErroUserNotFound() throws FindUserException, CreateActiveInfoException {
-        when(userService.findUserByLogin(anyString()))
-                .thenThrow(FindUserException.class);
-
-        userActiveRepository.saveNewActiveInfo("luiz_segundo");
-    }
 
     @Test
     public void desativateUserSucess() throws FindUserException, CreateActiveInfoException {

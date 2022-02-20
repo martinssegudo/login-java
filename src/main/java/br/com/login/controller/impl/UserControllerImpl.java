@@ -50,6 +50,7 @@ public class UserControllerImpl implements UserController {
     public ResponseEntity save(@RequestBody UserCreateDTO userCreateDTO) throws CreateUserException, DateUtilException {
         userService.saveUser(User.builder()
                         .name(userCreateDTO.getName())
+                        .login(userCreateDTO.getLogin())
                         .password(userCreateDTO.getPasssword())
                         .birthDay(DateUtil.convertStgringToLocalDate(
                                 userCreateDTO.getBirthDay(),

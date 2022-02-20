@@ -16,31 +16,23 @@ import java.time.LocalDateTime;
 @Service
 public class UserActiveInfoServiceImpl implements UserActiveInfoService {
 
-    private UserService userService;
     private UserActiveInfoRepository activeUserInfoRepository;
 
     @Autowired
-    public UserActiveInfoServiceImpl(UserService userService,
-                                     UserActiveInfoRepository activeUserInfoRepository){
-        this.userService = userService;
+    public UserActiveInfoServiceImpl(UserActiveInfoRepository activeUserInfoRepository){
         this.activeUserInfoRepository = activeUserInfoRepository;
     }
 
     @Override
-    public void saveNewActiveInfo(String login) throws CreateActiveInfoException {
-        try {
-            User findedUser = userService.findUserByLogin(login);
-            ActiveUserInfo newActive = ActiveUserInfo.builder()
-                    .startDate(LocalDateTime.now())
-                    .user(findedUser)
-                    .build();
+    public void saveNewActiveInfo(User user) throws CreateActiveInfoException {
+        ActiveUserInfo newActive = ActiveUserInfo.builder()
+                .startDate(LocalDateTime.now())
+                .user(user)
+                .build();
             activeUserInfoRepository.save(newActive);
-        } catch (FindUserException e) {
-            throw new CreateActiveInfoException();
-        }
     }
 
-    @Autowired
+    @Override
     public void removeAccess(String login) throws CreateActiveInfoException{
         try {
             ActiveUserInfo newActive = activeUserInfoRepository.findByLogin(login);
